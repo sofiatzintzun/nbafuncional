@@ -5,7 +5,8 @@ import pandas as pd
 st.set_page_config(
     page_title="Panel de Análisis Deportivo",
     page_icon="🏀",
-    layout="wide"
+    layout="wide",
+    backgroud="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZAtzM_7vjNgkwvj0lA-Y94T4lwnyb5yE0Lr9u1p-IdayCQczuvhXOns4&s=10"
 )
 
 # Menú lateral de navegación
