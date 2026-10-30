@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# 2. Inyección de CSS responsivo y fondo translúcido adaptativo
+# 2. Inyección de CSS responsivo avanzado (corrección de textos largos en móviles)
 BG_IMAGE_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZAtzM_7vjNgkwvj0lA-Y94T4lwnyb5yE0Lr9u1p-IdayCQczuvhXOns4&s=10"
 
 st.markdown(
@@ -28,19 +28,25 @@ st.markdown(
         z-index: -1;
     }}
     
-    /* Adaptabilidad para tarjetas y contenedores en móviles */
+    /* Adaptabilidad total y ajuste de texto para dispositivos móviles */
     @media (max-width: 768px) {{
         .stContainer {{
-            padding: 5px;
+            padding: 8px;
         }}
         h1 {{
-            font-size: 1.5rem !important;
+            font-size: 1.4rem !important;
         }}
         h2 {{
-            font-size: 1.2rem !important;
+            font-size: 1.1rem !important;
         }}
         h3 {{
-            font-size: 1rem !important;
+            font-size: 0.95rem !important;
+        }}
+        /* Evita que los textos largos o métricas se salgan de la pantalla */
+        p, span, div, label, .stMarkdown {{
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            word-break: break-word !important;
         }}
     }}
     </style>
@@ -48,7 +54,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Menú lateral de navegación (Partidos ahora es el primero)
+# Menú lateral de navegación
 st.sidebar.title("Navegación")
 menu = st.sidebar.radio("Selecciona una sección:", ["Partidos", "Equipos", "Jugadores"])
 
@@ -68,7 +74,7 @@ st.sidebar.markdown("---")
 busqueda = st.sidebar.text_input("🔍 Buscar en la vista actual:", "")
 
 # ---------------------------------------------------------
-# VISTA 1: PARTIDOS (Ahora es la página de inicio)
+# VISTA 1: PARTIDOS (Inicio)
 # ---------------------------------------------------------
 if menu == "Partidos":
     st.title("📅 Vista de Partidos y Predicciones")
