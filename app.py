@@ -139,7 +139,6 @@ elif menu == "Jugadores":
         df_jugadores = cargar_datos(URL_JUGADORES)
         df_jugadores = df_jugadores.fillna("")
         
-        # Filtrar para mostrar solo los que tienen algo escrito en la Columna A (índice 0)
         if len(df_jugadores.columns) > 0:
             col_a = df_jugadores.columns[0]
             df_jugadores = df_jugadores[
@@ -155,17 +154,15 @@ elif menu == "Jugadores":
         st.metric("Jugadores Mostrados", len(df_jugadores))
         st.markdown("---")
 
-        # Iterar sobre cada fila para crear las tarjetas con la imagen más grande:
         for index, row in df_jugadores.iterrows():
             with st.container(border=True):
-                # Columnas ajustadas para dar más espacio a la imagen (ancho 1.2 vs 3.8)
                 col_img, col_enf = st.columns([1.2, 3.8])
                 
                 with col_img:
                     try:
-                        imagen_url = row.iloc[9] if len(row) > 9 else "" # Columna J (índice 9)
+                        imagen_url = row.iloc[9] if len(row) > 9 else ""
                         if pd.notna(imagen_url) and str(imagen_url).startswith("http"):
-                            st.image(imagen_url, width=150) # Imagen ampliada a 150px
+                            st.image(imagen_url, width=150)
                         else:
                             st.write("🏀")
                     except:
@@ -177,7 +174,6 @@ elif menu == "Jugadores":
 
                 st.markdown("---")
 
-                # Columnas inferiores: Izquierda (B, D, F) vs Derecha (C, E, G)
                 col_izq, col_der = st.columns(2)
 
                 with col_izq:
@@ -216,7 +212,7 @@ elif menu == "Jugadores":
         st.error(f"Error al cargar la pestaña Jugadores: {e}")
 
 # ---------------------------------------------------------
-# VISTA 3: PARTIDOS (Formato de tabla limpia)
+# VISTA 3: PARTIDOS (Omitiendo la Columna A)
 # ---------------------------------------------------------
 elif menu == "Partidos":
     st.title("📅 Vista de Partidos y Predicciones")
@@ -226,9 +222,13 @@ elif menu == "Partidos":
         df_partidos = cargar_datos(URL_PARTIDOS)
         df_partidos = df_partidos.fillna("")
         
+        # Ocultar / Quitar la Columna A (índice 0) si el DataFrame tiene columnas
+        if len(df_partidos.columns) > 0:
+            df_partidos = df_partidos.iloc[:, 1:]
+        
         col1, col2 = st.columns(2)
         with col1:
-            st.metric("Total de Filas (Partidos)", len(df_partidos))
+            st.metric("Total de Partidos", len(df_partidos))
 
         if busqueda:
             mascara = df_partidos.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
