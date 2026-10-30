@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# 2. Inyección de CSS responsivo con forzado estricto de ancho y salto de línea en móviles
+# 2. Inyección de CSS responsivo avanzado (corrección de textos largos en móviles)
 BG_IMAGE_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZAtzM_7vjNgkwvj0lA-Y94T4lwnyb5yE0Lr9u1p-IdayCQczuvhXOns4&s=10"
 
 st.markdown(
@@ -28,23 +28,24 @@ st.markdown(
         z-index: -1;
     }}
     
-    /* Reglas estrictas para dispositivos móviles */
+    /* Adaptabilidad total y ajuste de texto para dispositivos móviles */
     @media (max-width: 768px) {{
         .stContainer {{
-            max-width: 100% !important;
-            padding: 8px !important;
-            overflow-x: hidden !important;
+            padding: 8px;
         }}
-        [data-testid="stVerticalBlock"] {{
-            max-width: 100% !important;
-            overflow-x: hidden !important;
+        h1 {{
+            font-size: 1.4rem !important;
         }}
-        p, span, div, label, .stMarkdown, h1, h2, h3 {{
-            max-width: 100% !important;
+        h2 {{
+            font-size: 1.1rem !important;
+        }}
+        h3 {{
+            font-size: 0.95rem !important;
+        }}
+        p, span, div, label, .stMarkdown {{
             word-wrap: break-word !important;
             overflow-wrap: break-word !important;
             word-break: break-word !important;
-            white-space: normal !important;
         }}
     }}
     </style>
@@ -149,6 +150,7 @@ if menu == "Partidos":
 
                 st.markdown("---")
 
+                # Columnas J y K adaptadas con Markdown para evitar que se corten en móviles
                 col_jk1, col_jk2 = st.columns(2)
                 with col_jk1:
                     try:
@@ -190,7 +192,7 @@ if menu == "Partidos":
         st.error(f"Error al cargar la pestaña Partidos: {e}")
 
 # ---------------------------------------------------------
-# VISTA 2: EQUIPOS (Con métricas 2x2 / lado a lado)
+# VISTA 2: EQUIPOS
 # ---------------------------------------------------------
 elif menu == "Equipos":
     st.title("🏆 Vista de Equipos")
@@ -234,24 +236,15 @@ elif menu == "Equipos":
                         e_stat4 = df_equipos.columns[4]
                         f_stat5 = df_equipos.columns[5]
                         
-                        # Fila superior de métricas (stat2 y stat3 lado a lado)
-                        stat_cols_1 = st.columns(2)
-                        with stat_cols_1[0]:
-                            st.markdown(f"**{c_stat2}**")
-                            st.markdown(f"### {row.iloc[2]}")
-                        with stat_cols_1[1]:
-                            st.markdown(f"**{d_stat3}**")
-                            st.markdown(f"### {row.iloc[3]}")
-
-                        # Fila inferior de métricas (stat4 y stat5 lado a lado)
-                        stat_cols_2 = st.columns(2)
-                        with stat_cols_2[0]:
-                            st.markdown(f"**{e_stat4}**")
-                            st.markdown(f"### {row.iloc[4]}")
-                        with stat_cols_2[1]:
-                            st.markdown(f"**{f_stat5}**")
-                            st.markdown(f"### {row.iloc[5]}")
-
+                        stat_cols = st.columns(4)
+                        with stat_cols[0]:
+                            st.metric(label=str(c_stat2), value=str(row.iloc[2]))
+                        with stat_cols[1]:
+                            st.metric(label=str(d_stat3), value=str(row.iloc[3]))
+                        with stat_cols[2]:
+                            st.metric(label=str(e_stat4), value=str(row.iloc[4]))
+                        with stat_cols[3]:
+                            st.metric(label=str(f_stat5), value=str(row.iloc[5]))
                     except Exception as err:
                         st.text("Estadísticas no disponibles")
 
