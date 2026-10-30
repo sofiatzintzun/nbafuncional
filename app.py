@@ -9,7 +9,7 @@ st.set_page_config(
 )
 
 # 2. Inyección de CSS para poner la imagen de fondo en la app
-BG_IMAGE_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZAtzM_7vjNgkwvj0lA-Y94T4lwnyb5yE0Lr9u1p-IdayCQczuvhXOns4&s=10"
+BG_IMAGE_URL = "https://st.depositphotos.com/1614195/1512/i/450/depositphotos_15126123-stock-photo-basketball-background.jpg"
 
 st.markdown(
     f"""
