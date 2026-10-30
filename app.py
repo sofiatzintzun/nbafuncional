@@ -42,7 +42,6 @@ st.markdown(
         h3 {{
             font-size: 0.95rem !important;
         }}
-        /* Evita que los textos largos o métricas se salgan de la pantalla */
         p, span, div, label, .stMarkdown {{
             word-wrap: break-word !important;
             overflow-wrap: break-word !important;
@@ -151,19 +150,22 @@ if menu == "Partidos":
 
                 st.markdown("---")
 
+                # Columnas J y K adaptadas con Markdown para evitar que se corten en móviles
                 col_jk1, col_jk2 = st.columns(2)
                 with col_jk1:
                     try:
                         j_val = row.iloc[9] if len(row) > 9 else ""
                         col_j_name = df_partidos.columns[9] if len(df_partidos.columns) > 9 else "J"
-                        st.metric(label=str(col_j_name), value=str(j_val))
+                        st.markdown(f"**{col_j_name}**")
+                        st.markdown(f"### {j_val}")
                     except:
                         pass
                 with col_jk2:
                     try:
                         k_val = row.iloc[10] if len(row) > 10 else ""
                         col_k_name = df_partidos.columns[10] if len(df_partidos.columns) > 10 else "K"
-                        st.metric(label=str(col_k_name), value=str(k_val))
+                        st.markdown(f"**{col_k_name}**")
+                        st.markdown(f"### {k_val}")
                     except:
                         pass
 
