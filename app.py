@@ -129,7 +129,7 @@ if menu == "Equipos":
         st.error(f"Error al cargar la pestaña Equipos: {e}")
 
 # ---------------------------------------------------------
-# VISTA 2: JUGADORES
+# VISTA 2: JUGADORES (Diseño basado en tu boceto)
 # ---------------------------------------------------------
 elif menu == "Jugadores":
     st.title("🏃 Vista de Jugadores")
@@ -139,6 +139,7 @@ elif menu == "Jugadores":
         df_jugadores = cargar_datos(URL_JUGADORES)
         df_jugadores = df_jugadores.fillna("")
         
+        # Filtrar para mostrar solo los que tienen algo escrito en la Columna A (índice 0)
         if len(df_jugadores.columns) > 0:
             col_a = df_jugadores.columns[0]
             df_jugadores = df_jugadores[
@@ -147,57 +148,15 @@ elif menu == "Jugadores":
                 (df_jugadores[col_a].astype(str).str.lower() != "none")
             ]
         
-        col1, col2 = st.columns(2)
-        with col1:
-            st.metric("Total de Jugadores Registrados", len(df_jugadores))
-
         if busqueda:
             mascara = df_jugadores.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
             df_jugadores = df_jugadores[mascara]
 
-        config_jugadores = {
-            "Imagen": st.column_config.ImageColumn("Foto / Imagen", width="small")
-        }
-
-        st.dataframe(
-            df_jugadores, 
-            use_container_width=True, 
-            hide_index=True,
-            column_config=config_jugadores
-        )
-
-    except Exception as e:
-        st.error(f"Error al cargar la pestaña Jugadores: {e}")
-
-# ---------------------------------------------------------
-# VISTA 3: PARTIDOS (Diseño en Tarjetas Personalizadas según tu boceto)
-# ---------------------------------------------------------
-elif menu == "Partidos":
-    st.title("📅 Vista de Partidos y Predicciones")
-    st.markdown("Calendario, análisis y proyecciones de los encuentros.")
-    
-    try:
-        df_partidos = cargar_datos(URL_PARTIDOS)
-        df_partidos = df_partidos.fillna("")
-        
-        # Filtrar para mostrar solo los que tienen algo escrito en la Columna A (índice 0)
-        if len(df_partidos.columns) > 0:
-            col_a = df_partidos.columns[0]
-            df_partidos = df_partidos[
-                (df_partidos[col_a].astype(str).str.strip() != "") & 
-                (df_partidos[col_a].astype(str).str.lower() != "nan") &
-                (df_partidos[col_a].astype(str).str.lower() != "none")
-            ]
-        
-        if busqueda:
-            mascara = df_partidos.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
-            df_partidos = df_partidos[mascara]
-
-        st.metric("Partidos Mostrados", len(df_partidos))
+        st.metric("Jugadores Mostrados", len(df_jugadores))
         st.markdown("---")
 
-        # Iterar sobre cada fila para crear las tarjetas según el boceto:
-        for index, row in df_partidos.iterrows():
+        # Iterar sobre cada fila para crear las tarjetas según el boceto de Jugadores:
+        for index, row in df_jugadores.iterrows():
             with st.container(border=True):
                 col_img, col_enf = st.columns([1, 4])
                 
@@ -212,47 +171,69 @@ elif menu == "Partidos":
                         st.write("🏀")
 
                 with col_enf:
-                    enfrentamiento_val = row.iloc[0] if len(row) > 0 else "Encuentro"
-                    st.subheader(f"⚔️ {enfrentamiento_val}")
+                    col_a_val = row.iloc[0] if len(row) > 0 else ""
+                    st.subheader(f"📌 {col_a_val}")
 
                 st.markdown("---")
 
-                # Columnas inferiores: Visitante vs Local
-                col_vis, col_loc = st.columns(2)
+                # Columnas inferiores: Izquierda (B, D, F) vs Derecha (C, E, G)
+                col_izq, col_der = st.columns(2)
 
-                with col_vis:
-                    st.markdown("### ✈️ Visitante")
+                with col_izq:
                     try:
                         b_val = row.iloc[1] if len(row) > 1 else ""
                         d_val = row.iloc[3] if len(row) > 3 else ""
                         f_val = row.iloc[5] if len(row) > 5 else ""
                         
-                        col_b_name = df_partidos.columns[1] if len(df_partidos.columns) > 1 else "Visitante"
-                        col_d_name = df_partidos.columns[3] if len(df_partidos.columns) > 3 else "Líderes"
-                        col_f_name = df_partidos.columns[5] if len(df_partidos.columns) > 5 else "Proyección"
+                        col_b_name = df_jugadores.columns[1] if len(df_jugadores.columns) > 1 else "B"
+                        col_d_name = df_jugadores.columns[3] if len(df_jugadores.columns) > 3 else "D"
+                        col_f_name = df_jugadores.columns[5] if len(df_jugadores.columns) > 5 else "F"
 
                         st.metric(label=str(col_b_name), value=str(b_val))
                         st.markdown(f"**{col_d_name}:** {d_val}")
                         st.markdown(f"**{col_f_name}:** {f_val}")
                     except Exception as e:
-                        st.text("Datos de visitante no disponibles")
+                        st.text("Datos no disponibles")
 
-                with col_loc:
-                    st.markdown("### 🏠 Local")
+                with col_der:
                     try:
                         c_val = row.iloc[2] if len(row) > 2 else ""
                         e_val = row.iloc[4] if len(row) > 4 else ""
                         g_val = row.iloc[6] if len(row) > 6 else ""
                         
-                        col_c_name = df_partidos.columns[2] if len(df_partidos.columns) > 2 else "Local"
-                        col_e_name = df_partidos.columns[4] if len(df_partidos.columns) > 4 else "Líderes"
-                        col_g_name = df_partidos.columns[6] if len(df_partidos.columns) > 6 else "Proyección"
+                        col_c_name = df_jugadores.columns[2] if len(df_jugadores.columns) > 2 else "C"
+                        col_e_name = df_jugadores.columns[4] if len(df_jugadores.columns) > 4 else "E"
+                        col_g_name = df_jugadores.columns[6] if len(df_jugadores.columns) > 6 else "G"
 
                         st.metric(label=str(col_c_name), value=str(c_val))
                         st.markdown(f"**{col_e_name}:** {e_val}")
                         st.markdown(f"**{col_g_name}:** {g_val}")
                     except Exception as e:
-                        st.text("Datos de local no disponibles")
+                        st.text("Datos no disponibles")
+
+    except Exception as e:
+        st.error(f"Error al cargar la pestaña Jugadores: {e}")
+
+# ---------------------------------------------------------
+# VISTA 3: PARTIDOS (Formato de tabla limpia)
+# ---------------------------------------------------------
+elif menu == "Partidos":
+    st.title("📅 Vista de Partidos y Predicciones")
+    st.markdown("Calendario, análisis y proyecciones de los encuentros.")
+    
+    try:
+        df_partidos = cargar_datos(URL_PARTIDOS)
+        df_partidos = df_partidos.fillna("")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Total de Filas (Partidos)", len(df_partidos))
+
+        if busqueda:
+            mascara = df_partidos.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
+            df_partidos = df_partidos[mascara]
+
+        st.dataframe(df_partidos, use_container_width=True, hide_index=True)
 
     except Exception as e:
         st.error(f"Error al cargar la pestaña Partidos: {e}")
