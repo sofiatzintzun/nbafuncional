@@ -12,43 +12,88 @@ st.set_page_config(
 st.sidebar.title("Navegación")
 menu = st.sidebar.radio("Selecciona una sección:", ["Equipos", "Jugadores", "Partidos"])
 
-# URLs de cada pestaña de Google Sheets (reemplaza 'TU_ID_DE_LA_HOJA' y los 'GID')
+# URLs de cada pestaña de Google Sheets
 URL_EQUIPOS = "https://docs.google.com/spreadsheets/d/1RiInl1AnLDp1haLz0uMP8jsa04AppRzt8xhGSJLw7gQ/export?format=csv&gid=0"
 URL_JUGADORES = "https://docs.google.com/spreadsheets/d/1RiInl1AnLDp1haLz0uMP8jsa04AppRzt8xhGSJLw7gQ/export?format=csv&gid=417439193"
-URL_PARTIDOS = "https://docs.google.com/spreadsheets/d/1RiInl1AnLDp1haLz0uMP8jsa04AppRzt8xhGSJLw7gQexport?format=csv&gid=561826503"
+URL_PARTIDOS = "https://docs.google.com/spreadsheets/d/1RiInl1AnLDp1haLz0uMP8jsa04AppRzt8xhGSJLw7gQ/export?format=csv&gid=561826503"
 
 # Función con caché para cargar los datos de forma rápida
 @st.cache_data(ttl=300)
 def cargar_datos(url):
-    return pd.read_csv(url)
+    df = pd.read_csv(url)
+    return df
 
-# Lógica según la opción seleccionada en el menú lateral
+# Buscador general opcional en la barra lateral
+st.sidebar.markdown("---")
+busqueda = st.sidebar.text_input("🔍 Buscar en la vista actual:", "")
+
+# ---------------------------------------------------------
+# VISTA 1: EQUIPOS
+# ---------------------------------------------------------
 if menu == "Equipos":
     st.title("🏆 Vista de Equipos")
     st.markdown("Estadísticas y métricas generales de los equipos.")
     
     try:
-        df = cargar_datos(URL_EQUIPOS)
-        st.dataframe(df, use_container_width=True)
+        df_equipos = cargar_datos(URL_EQUIPOS)
+        
+        # Tarjetas resumen
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Total de Equipos", len(df_equipos))
+        
+        # Aplicar filtro de búsqueda si el usuario escribe algo
+        if busqueda:
+            mascara = df_equipos.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
+            df_equipos = df_equipos[mascara]
+
+        st.dataframe(df_equipos, use_container_width=True)
+
     except Exception as e:
         st.error(f"Error al cargar la pestaña Equipos: {e}")
 
+# ---------------------------------------------------------
+# VISTA 2: JUGADORES
+# ---------------------------------------------------------
 elif menu == "Jugadores":
     st.title("🏃 Vista de Jugadores")
     st.markdown("Rendimiento, uso y estadísticas individuales de los jugadores.")
     
     try:
-        df = cargar_datos(URL_JUGADORES)
-        st.dataframe(df, use_container_width=True)
+        df_jugadores = cargar_datos(URL_JUGADORES)
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Total de Jugadores Registrados", len(df_jugadores))
+
+        if busqueda:
+            mascara = df_jugadores.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
+            df_jugadores = df_jugadores[mascara]
+
+        st.dataframe(df_jugadores, use_container_width=True)
+
     except Exception as e:
         st.error(f"Error al cargar la pestaña Jugadores: {e}")
 
+# ---------------------------------------------------------
+# VISTA 3: PARTIDOS
+# ---------------------------------------------------------
 elif menu == "Partidos":
     st.title("📅 Vista de Partidos y Predicciones")
     st.markdown("Calendario, análisis y proyecciones de los encuentros.")
     
     try:
-        df = cargar_datos(URL_PARTIDOS)
-        st.dataframe(df, use_container_width=True)
+        df_partidos = cargar_datos(URL_PARTIDOS)
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Total de Partidos Registrados", len(df_partidos))
+
+        if busqueda:
+            mascara = df_partidos.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
+            df_partidos = df_partidos[mascara]
+
+        st.dataframe(df_partidos, use_container_width=True)
+
     except Exception as e:
         st.error(f"Error al cargar la pestaña Partidos: {e}")
