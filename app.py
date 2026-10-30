@@ -37,6 +37,11 @@ if menu == "Equipos":
     try:
         df_equipos = cargar_datos(URL_EQUIPOS)
         
+        # Filtrar la columna G (índice 6) para mostrar solo los que sean diferentes a "No Juega Hoy"
+        if len(df_equipos.columns) > 6:
+            col_g = df_equipos.columns[6]
+            df_equipos = df_equipos[df_equipos[col_g].astype(str).str.strip().str.lower() != "no juega hoy"]
+        
         col1, col2 = st.columns(2)
         with col1:
             st.metric("Total de Filas (Equipos)", len(df_equipos))
@@ -46,8 +51,6 @@ if menu == "Equipos":
             df_equipos = df_equipos[mascara]
 
         # Configuración para transformar enlaces de texto en imágenes reales.
-        # IMPORTANTE: Reemplaza "Imagen" (o el nombre que esté entre comillas) por 
-        # el nombre exacto de la columna en tu Google Sheet que contiene los enlaces de las imágenes.
         configuracion_columnas = {
             "Imagen": st.column_config.ImageColumn("Logo / Imagen", width="small")
         }
@@ -79,9 +82,6 @@ elif menu == "Jugadores":
         if busqueda:
             mascara = df_jugadores.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
             df_jugadores = df_jugadores[mascara]
-
-        # Si en Jugadores también tienes columna de imagen, descomenta y ajusta el nombre:
-        # config_jugadores = {"Imagen": st.column_config.ImageColumn("Foto", width="small")}
 
         st.dataframe(df_jugadores, use_container_width=True, hide_index=True)
 
