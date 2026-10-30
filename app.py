@@ -1,11 +1,35 @@
 import streamlit as st
 import pandas as pd
 
-# Configuración general de la página
+# 1. Configuración general de la página
 st.set_page_config(
     page_title="Panel de Análisis Deportivo",
     page_icon="🏀",
     layout="wide"
+)
+
+# 2. Inyección de CSS con opacidad controlada para la imagen de fondo
+BG_IMAGE_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZAtzM_7vjNgkwvj0lA-Y94T4lwnyb5yE0Lr9u1p-IdayCQczuvhXOns4&s=10"
+
+st.markdown(
+    f"""
+    <style>
+    .stApp::before {{
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("{BG_IMAGE_URL}");
+        background-attachment: fixed;
+        background-size: cover;
+        opacity: 0.3;
+        z-index: -1;
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
 )
 
 # Menú lateral de navegación
@@ -37,7 +61,6 @@ if menu == "Equipos":
     try:
         df_equipos = cargar_datos(URL_EQUIPOS)
         
-        # Filtrar la columna G (índice 6) para mostrar solo los diferentes a "No Juega Hoy"
         if len(df_equipos.columns) > 6:
             col_g = df_equipos.columns[6]
             df_equipos = df_equipos[df_equipos[col_g].astype(str).str.strip().str.lower() != "no juega hoy"]
@@ -49,14 +72,13 @@ if menu == "Equipos":
         st.metric("Equipos Mostrados", len(df_equipos))
         st.markdown("---")
 
-        # Iterar sobre cada fila para crear una tarjeta visual personalizada
         for index, row in df_equipos.iterrows():
             with st.container(border=True):
                 col_img, col_info = st.columns([1, 4])
                 
                 with col_img:
                     try:
-                        imagen_url = row.iloc[9] # Índice 9 corresponde a la columna J
+                        imagen_url = row.iloc[9]
                         if pd.notna(imagen_url) and str(imagen_url).startswith("http"):
                             st.image(imagen_url, width=100)
                         else:
@@ -115,11 +137,8 @@ elif menu == "Jugadores":
     
     try:
         df_jugadores = cargar_datos(URL_JUGADORES)
-        
-        # Limpiar valores nulos por defecto
         df_jugadores = df_jugadores.fillna("")
         
-        # Filtrar para mostrar solo los que tienen algo escrito en la Columna A (índice 0)
         if len(df_jugadores.columns) > 0:
             col_a = df_jugadores.columns[0]
             df_jugadores = df_jugadores[
@@ -136,9 +155,6 @@ elif menu == "Jugadores":
             mascara = df_jugadores.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
             df_jugadores = df_jugadores[mascara]
 
-        # Configuración de columnas para mostrar imágenes en lugar de enlaces.
-        # IMPORTANTE: Reemplaza "Imagen" (o el nombre que esté entre comillas) por 
-        # el nombre exacto de la columna en tu Google Sheet de Jugadores que contiene los enlaces de las imágenes.
         config_jugadores = {
             "Imagen": st.column_config.ImageColumn("Foto / Imagen", width="small")
         }
@@ -154,7 +170,7 @@ elif menu == "Jugadores":
         st.error(f"Error al cargar la pestaña Jugadores: {e}")
 
 # ---------------------------------------------------------
-# VISTA 3: PARTIDOS
+# VISTA 3: PARTIDOS (Diseño en Tarjetas Personalizadas según tu boceto)
 # ---------------------------------------------------------
 elif menu == "Partidos":
     st.title("📅 Vista de Partidos y Predicciones")
@@ -162,16 +178,81 @@ elif menu == "Partidos":
     
     try:
         df_partidos = cargar_datos(URL_PARTIDOS)
+        df_partidos = df_partidos.fillna("")
         
-        col1, col2 = st.columns(2)
-        with col1:
-            st.metric("Total de Filas (Partidos)", len(df_partidos))
-
+        # Filtrar para mostrar solo los que tienen algo escrito en la Columna A (índice 0)
+        if len(df_partidos.columns) > 0:
+            col_a = df_partidos.columns[0]
+            df_partidos = df_partidos[
+                (df_partidos[col_a].astype(str).str.strip() != "") & 
+                (df_partidos[col_a].astype(str).str.lower() != "nan") &
+                (df_partidos[col_a].astype(str).str.lower() != "none")
+            ]
+        
         if busqueda:
             mascara = df_partidos.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
             df_partidos = df_partidos[mascara]
 
-        st.dataframe(df_partidos, use_container_width=True, hide_index=True)
+        st.metric("Partidos Mostrados", len(df_partidos))
+        st.markdown("---")
+
+        # Iterar sobre cada fila para crear las tarjetas según el boceto:
+        for index, row in df_partidos.iterrows():
+            with st.container(border=True):
+                col_img, col_enf = st.columns([1, 4])
+                
+                with col_img:
+                    try:
+                        imagen_url = row.iloc[9] if len(row) > 9 else "" # Columna J (índice 9)
+                        if pd.notna(imagen_url) and str(imagen_url).startswith("http"):
+                            st.image(imagen_url, width=100)
+                        else:
+                            st.write("🏀")
+                    except:
+                        st.write("🏀")
+
+                with col_enf:
+                    enfrentamiento_val = row.iloc[0] if len(row) > 0 else "Encuentro"
+                    st.subheader(f"⚔️ {enfrentamiento_val}")
+
+                st.markdown("---")
+
+                # Columnas inferiores: Visitante vs Local
+                col_vis, col_loc = st.columns(2)
+
+                with col_vis:
+                    st.markdown("### ✈️ Visitante")
+                    try:
+                        b_val = row.iloc[1] if len(row) > 1 else ""
+                        d_val = row.iloc[3] if len(row) > 3 else ""
+                        f_val = row.iloc[5] if len(row) > 5 else ""
+                        
+                        col_b_name = df_partidos.columns[1] if len(df_partidos.columns) > 1 else "Visitante"
+                        col_d_name = df_partidos.columns[3] if len(df_partidos.columns) > 3 else "Líderes"
+                        col_f_name = df_partidos.columns[5] if len(df_partidos.columns) > 5 else "Proyección"
+
+                        st.metric(label=str(col_b_name), value=str(b_val))
+                        st.markdown(f"**{col_d_name}:** {d_val}")
+                        st.markdown(f"**{col_f_name}:** {f_val}")
+                    except Exception as e:
+                        st.text("Datos de visitante no disponibles")
+
+                with col_loc:
+                    st.markdown("### 🏠 Local")
+                    try:
+                        c_val = row.iloc[2] if len(row) > 2 else ""
+                        e_val = row.iloc[4] if len(row) > 4 else ""
+                        g_val = row.iloc[6] if len(row) > 6 else ""
+                        
+                        col_c_name = df_partidos.columns[2] if len(df_partidos.columns) > 2 else "Local"
+                        col_e_name = df_partidos.columns[4] if len(df_partidos.columns) > 4 else "Líderes"
+                        col_g_name = df_partidos.columns[6] if len(df_partidos.columns) > 6 else "Proyección"
+
+                        st.metric(label=str(col_c_name), value=str(c_val))
+                        st.markdown(f"**{col_e_name}:** {e_val}")
+                        st.markdown(f"**{col_g_name}:** {g_val}")
+                    except Exception as e:
+                        st.text("Datos de local no disponibles")
 
     except Exception as e:
         st.error(f"Error al cargar la pestaña Partidos: {e}")
