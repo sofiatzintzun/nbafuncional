@@ -212,7 +212,7 @@ elif menu == "Jugadores":
         st.error(f"Error al cargar la pestaña Jugadores: {e}")
 
 # ---------------------------------------------------------
-# VISTA 3: PARTIDOS (Filtrando por número en Columna A y ocultándola)
+# VISTA 3: PARTIDOS (Filtrando por número en Columna A, ocultándola y mostrando imágenes)
 # ---------------------------------------------------------
 elif menu == "Partidos":
     st.title("📅 Vista de Partidos y Predicciones")
@@ -238,7 +238,18 @@ elif menu == "Partidos":
             mascara = df_partidos.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
             df_partidos = df_partidos[mascara]
 
-        st.dataframe(df_partidos, use_container_width=True, hide_index=True)
+        # Configuración para mostrar imágenes en lugar de enlaces en la tabla de Partidos
+        # (Asegúrate de que la columna de imagen en tu hoja se llame "Imagen" o cambia el nombre aquí)
+        config_partidos = {
+            "Imagen": st.column_config.ImageColumn("Imagen / Logo", width="small")
+        }
+
+        st.dataframe(
+            df_partidos, 
+            use_container_width=True, 
+            hide_index=True,
+            column_config=config_partidos
+        )
 
     except Exception as e:
         st.error(f"Error al cargar la pestaña Partidos: {e}")
