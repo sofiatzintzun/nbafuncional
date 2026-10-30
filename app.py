@@ -136,7 +136,19 @@ elif menu == "Jugadores":
             mascara = df_jugadores.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
             df_jugadores = df_jugadores[mascara]
 
-        st.dataframe(df_jugadores, use_container_width=True, hide_index=True)
+        # Configuración de columnas para mostrar imágenes en lugar de enlaces.
+        # IMPORTANTE: Reemplaza "Imagen" (o el nombre que esté entre comillas) por 
+        # el nombre exacto de la columna en tu Google Sheet de Jugadores que contiene los enlaces de las imágenes.
+        config_jugadores = {
+            "Imagen": st.column_config.ImageColumn("Foto / Imagen", width="small")
+        }
+
+        st.dataframe(
+            df_jugadores, 
+            use_container_width=True, 
+            hide_index=True,
+            column_config=config_jugadores
+        )
 
     except Exception as e:
         st.error(f"Error al cargar la pestaña Jugadores: {e}")
