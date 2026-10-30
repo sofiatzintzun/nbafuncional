@@ -1,35 +1,11 @@
 import streamlit as st
 import pandas as pd
 
-# 1. Configuración general de la página (parámetros válidos)
+# Configuración general de la página
 st.set_page_config(
     page_title="Panel de Análisis Deportivo",
     page_icon="🏀",
     layout="wide"
-)
-
-# 2. Inyección de CSS con opacidad controlada para la imagen de fondo
-BG_IMAGE_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZAtzM_7vjNgkwvj0lA-Y94T4lwnyb5yE0Lr9u1p-IdayCQczuvhXOns4&s=10"
-
-st.markdown(
-    f"""
-    <style>
-    .stApp::before {{
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: url("{BG_IMAGE_URL}");
-        background-attachment: fixed;
-        background-size: cover;
-        opacity: 0.1;  /* Cambia este valor entre 0.1 (muy transparente) y 1.0 (opaco) */
-        z-index: -1;
-    }}
-    </style>
-    """,
-    unsafe_allow_html=True
 )
 
 # Menú lateral de navegación
@@ -76,9 +52,14 @@ if menu == "Equipos":
         # Iterar sobre cada fila para crear una tarjeta visual personalizada
         for index, row in df_equipos.iterrows():
             with st.container(border=True):
+                # Dividimos la tarjeta en columnas: Izquierda para Imagen, Derecha para la info
                 col_img, col_info = st.columns([1, 4])
                 
+                # Asignación según las columnas de tu esquema (ajusta los nombres si es necesario)
+                # J = Imagen, B = Nombre, C,D,E,F = Estadísticas, H = Descripción, I = Reporte de jugadores
+                
                 with col_img:
+                    # Intenta mostrar la imagen de la columna J (o ajusta el nombre de tu columna de imagen)
                     try:
                         imagen_url = row.iloc[9] # Índice 9 corresponde a la columna J
                         if pd.notna(imagen_url) and str(imagen_url).startswith("http"):
@@ -89,9 +70,11 @@ if menu == "Equipos":
                         st.write("🏀")
 
                 with col_info:
+                    # Nombre (Columna B / Índice 1)
                     nombre_equipo = row.iloc[1] if len(row) > 1 else "Equipo"
                     st.subheader(f"{nombre_equipo}")
                     
+                    # Estadísticas (Columnas C, D, E, F / Índices 2, 3, 4, 5)
                     try:
                         c_stat2 = df_equipos.columns[2]
                         d_stat3 = df_equipos.columns[3]
@@ -112,6 +95,7 @@ if menu == "Equipos":
 
                     st.markdown("---")
                     
+                    # Descripción (Columna H / Índice 7) y Reporte de jugadores (Columna I / Índice 8)
                     desc_col, rep_col = st.columns(2)
                     with desc_col:
                         try:
