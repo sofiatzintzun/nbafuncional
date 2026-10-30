@@ -190,7 +190,7 @@ if menu == "Partidos":
         st.error(f"Error al cargar la pestaña Partidos: {e}")
 
 # ---------------------------------------------------------
-# VISTA 2: EQUIPOS
+# VISTA 2: EQUIPOS (Con métricas 2x2 / lado a lado)
 # ---------------------------------------------------------
 elif menu == "Equipos":
     st.title("🏆 Vista de Equipos")
@@ -234,15 +234,24 @@ elif menu == "Equipos":
                         e_stat4 = df_equipos.columns[4]
                         f_stat5 = df_equipos.columns[5]
                         
-                        stat_cols = st.columns(4)
-                        with stat_cols[0]:
-                            st.metric(label=str(c_stat2), value=str(row.iloc[2]))
-                        with stat_cols[1]:
-                            st.metric(label=str(d_stat3), value=str(row.iloc[3]))
-                        with stat_cols[2]:
-                            st.metric(label=str(e_stat4), value=str(row.iloc[4]))
-                        with stat_cols[3]:
-                            st.metric(label=str(f_stat5), value=str(row.iloc[5]))
+                        # Fila superior de métricas (stat2 y stat3 lado a lado)
+                        stat_cols_1 = st.columns(2)
+                        with stat_cols_1[0]:
+                            st.markdown(f"**{c_stat2}**")
+                            st.markdown(f"### {row.iloc[2]}")
+                        with stat_cols_1[1]:
+                            st.markdown(f"**{d_stat3}**")
+                            st.markdown(f"### {row.iloc[3]}")
+
+                        # Fila inferior de métricas (stat4 y stat5 lado a lado)
+                        stat_cols_2 = st.columns(2)
+                        with stat_cols_2[0]:
+                            st.markdown(f"**{e_stat4}**")
+                            st.markdown(f"### {row.iloc[4]}")
+                        with stat_cols_2[1]:
+                            st.markdown(f"**{f_stat5}**")
+                            st.markdown(f"### {row.iloc[5]}")
+
                     except Exception as err:
                         st.text("Estadísticas no disponibles")
 
