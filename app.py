@@ -212,7 +212,7 @@ elif menu == "Jugadores":
         st.error(f"Error al cargar la pestaña Jugadores: {e}")
 
 # ---------------------------------------------------------
-# VISTA 3: PARTIDOS (Omitiendo la Columna A)
+# VISTA 3: PARTIDOS (Filtrando solo filas con número en Columna A)
 # ---------------------------------------------------------
 elif menu == "Partidos":
     st.title("📅 Vista de Partidos y Predicciones")
@@ -222,9 +222,12 @@ elif menu == "Partidos":
         df_partidos = cargar_datos(URL_PARTIDOS)
         df_partidos = df_partidos.fillna("")
         
-        # Ocultar / Quitar la Columna A (índice 0) si el DataFrame tiene columnas
+        # Filtrar solo los registros que tengan un número en la Columna A (índice 0)
         if len(df_partidos.columns) > 0:
-            df_partidos = df_partidos.iloc[:, 1:]
+            col_a_name = df_partidos.columns[0]
+            # Convierte a numérico (si falla, queda como NaN) y descarta los no numéricos
+            df_partidos[col_a_name] = pd.to_numeric(df_partidos[col_a_name], errors='coerce')
+            df_partidos = df_partidos[df_partidos[col_a_name].notna()]
         
         col1, col2 = st.columns(2)
         with col1:
