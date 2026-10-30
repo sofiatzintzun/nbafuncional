@@ -24,7 +24,7 @@ st.markdown(
         background-image: url("{BG_IMAGE_URL}");
         background-attachment: fixed;
         background-size: cover;
-        opacity: 0.3;  /* Cambia este valor entre 0.1 (muy transparente) y 1.0 (opaco) */
+        opacity: 0.1;  /* Cambia este valor entre 0.1 (muy transparente) y 1.0 (opaco) */
         z-index: -1;
     }}
     </style>
