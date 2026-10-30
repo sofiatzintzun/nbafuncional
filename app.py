@@ -13,7 +13,7 @@ st.markdown("Bienvenido a la versión web de mi hoja de cálculo.")
 
 # 2. Carga de datos desde Google Sheets con caché
 # (Reemplaza la URL de abajo con tu enlace de Google Sheets terminado en /export?format=csv)
-SHEET_URL = "https://docs.google.com/spreadsheets/d/TU_ID_DE_LA_HOJA/export?format=csv"
+SHEET_URL = "https://docs.google.com/spreadsheets/d/1RiInl1AnLDp1haLz0uMP8jsa04AppRzt8xhGSJLw7gQ/export?format=csv"
 
 @st.cache_data(ttl=300)
 def cargar_datos():
