@@ -3,7 +3,7 @@ import pandas as pd
 
 # 1. Configuración general de la página
 st.set_page_config(
-    page_title="Panel de Análisis Deportivo",
+    page_title="NBA",
     page_icon="🏀",
     layout="wide"
 )
