@@ -3,12 +3,12 @@ import pandas as pd
 
 # 1. Configuración general de la página
 st.set_page_config(
-    page_title="NBA",
+    page_title="Panel de Análisis Deportivo",
     page_icon="🏀",
     layout="wide"
 )
 
-# 2. Inyección de CSS con opacidad controlada para la imagen de fondo
+# 2. Inyección de CSS responsivo y fondo translúcido adaptativo
 BG_IMAGE_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZAtzM_7vjNgkwvj0lA-Y94T4lwnyb5yE0Lr9u1p-IdayCQczuvhXOns4&s=10"
 
 st.markdown(
@@ -16,7 +16,7 @@ st.markdown(
     <style>
     .stApp::before {{
         content: "";
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         width: 100%;
@@ -26,6 +26,22 @@ st.markdown(
         background-size: cover;
         opacity: 0.3;
         z-index: -1;
+    }}
+    
+    /* Adaptabilidad para tarjetas y contenedores en móviles */
+    @media (max-width: 768px) {{
+        .stContainer {{
+            padding: 5px;
+        }}
+        h1 {{
+            font-size: 1.5rem !important;
+        }}
+        h2 {{
+            font-size: 1.2rem !important;
+        }}
+        h3 {{
+            font-size: 1rem !important;
+        }}
     }}
     </style>
     """,
@@ -212,7 +228,7 @@ elif menu == "Jugadores":
         st.error(f"Error al cargar la pestaña Jugadores: {e}")
 
 # ---------------------------------------------------------
-# VISTA 3: PARTIDOS (Diseño personalizado según tu boceto)
+# VISTA 3: PARTIDOS (Diseño personalizado responsivo)
 # ---------------------------------------------------------
 elif menu == "Partidos":
     st.title("📅 Vista de Partidos y Predicciones")
@@ -222,7 +238,6 @@ elif menu == "Partidos":
         df_partidos = cargar_datos(URL_PARTIDOS)
         df_partidos = df_partidos.fillna("")
         
-        # Filtrar solo los registros que tengan un número válido en la Columna A (índice 0)
         if len(df_partidos.columns) > 0:
             col_a_name = df_partidos.columns[0]
             df_partidos_filtrado = df_partidos[pd.to_numeric(df_partidos[col_a_name], errors='coerce').notna()].copy()
@@ -237,12 +252,11 @@ elif menu == "Partidos":
 
         for index, row in df_partidos.iterrows():
             with st.container(border=True):
-                # Sección superior: Imagen (M) y Datos principales (D, E, F, H, I)
                 col_img, col_info = st.columns([1.2, 3.8])
                 
                 with col_img:
                     try:
-                        imagen_url = row.iloc[12] if len(row) > 12 else "" # Columna M (índice 12)
+                        imagen_url = row.iloc[12] if len(row) > 12 else ""
                         if pd.notna(imagen_url) and str(imagen_url).startswith("http"):
                             st.image(imagen_url, width=150)
                         else:
@@ -252,40 +266,38 @@ elif menu == "Partidos":
 
                 with col_info:
                     try:
-                        partido_val = row.iloc[3] if len(row) > 3 else "" # Columna D
+                        partido_val = row.iloc[3] if len(row) > 3 else ""
                         st.subheader(f"⚔️ {partido_val}")
                     except:
                         st.subheader("Encuentro")
 
-                    # Fila 1: Hora (E) y Puntos Proyectados (F)
                     sub_col1, sub_col2 = st.columns(2)
                     with sub_col1:
                         try:
-                            hora_val = row.iloc[4] if len(row) > 4 else "" # Columna E
+                            hora_val = row.iloc[4] if len(row) > 4 else ""
                             col_e_name = df_partidos.columns[4] if len(df_partidos.columns) > 4 else "Hora"
                             st.markdown(f"**⏰ {col_e_name}:** {hora_val}")
                         except:
                             pass
                     with sub_col2:
                         try:
-                            puntos_val = row.iloc[5] if len(row) > 5 else "" # Columna F
+                            puntos_val = row.iloc[5] if len(row) > 5 else ""
                             col_f_name = df_partidos.columns[5] if len(df_partidos.columns) > 5 else "Puntos Proyectados"
                             st.markdown(f"**📊 {col_f_name}:** {puntos_val}")
                         except:
                             pass
 
-                    # Fila 2: Favorito (H) y Proyeccion (I)
                     sub_col3, sub_col4 = st.columns(2)
                     with sub_col3:
                         try:
-                            favorito_val = row.iloc[7] if len(row) > 7 else "" # Columna H
+                            favorito_val = row.iloc[7] if len(row) > 7 else ""
                             col_h_name = df_partidos.columns[7] if len(df_partidos.columns) > 7 else "Favorito"
                             st.markdown(f"**⭐ {col_h_name}:** {favorito_val}")
                         except:
                             pass
                     with sub_col4:
                         try:
-                            proy_val = row.iloc[8] if len(row) > 8 else "" # Columna I
+                            proy_val = row.iloc[8] if len(row) > 8 else ""
                             col_i_name = df_partidos.columns[8] if len(df_partidos.columns) > 8 else "Proyección"
                             st.markdown(f"**📈 {col_i_name}:** {proy_val}")
                         except:
@@ -293,18 +305,17 @@ elif menu == "Partidos":
 
                 st.markdown("---")
 
-                # Sección media: (J) y (K)
                 col_jk1, col_jk2 = st.columns(2)
                 with col_jk1:
                     try:
-                        j_val = row.iloc[9] if len(row) > 9 else "" # Columna J
+                        j_val = row.iloc[9] if len(row) > 9 else ""
                         col_j_name = df_partidos.columns[9] if len(df_partidos.columns) > 9 else "J"
                         st.metric(label=str(col_j_name), value=str(j_val))
                     except:
                         pass
                 with col_jk2:
                     try:
-                        k_val = row.iloc[10] if len(row) > 10 else "" # Columna K
+                        k_val = row.iloc[10] if len(row) > 10 else ""
                         col_k_name = df_partidos.columns[10] if len(df_partidos.columns) > 10 else "K"
                         st.metric(label=str(col_k_name), value=str(k_val))
                     except:
@@ -312,11 +323,10 @@ elif menu == "Partidos":
 
                 st.markdown("---")
 
-                # Sección inferior: Descripción (N) y Proyección de Jugadores (L)
                 desc_col, proy_jug_col = st.columns(2)
                 with desc_col:
                     try:
-                        desc_val = row.iloc[13] if len(row) > 13 else "" # Columna N
+                        desc_val = row.iloc[13] if len(row) > 13 else ""
                         col_n_name = df_partidos.columns[13] if len(df_partidos.columns) > 13 else "Descripción"
                         st.markdown(f"**{col_n_name}:** {desc_val}")
                     except:
@@ -324,7 +334,7 @@ elif menu == "Partidos":
 
                 with proy_jug_col:
                     try:
-                        proy_jug_val = row.iloc[11] if len(row) > 11 else "" # Columna L
+                        proy_jug_val = row.iloc[11] if len(row) > 11 else ""
                         col_l_name = df_partidos.columns[11] if len(df_partidos.columns) > 11 else "Proyección de Jugadores"
                         st.markdown(f"**{col_l_name}:** {proy_jug_val}")
                     except:
