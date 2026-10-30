@@ -1,10 +1,10 @@
 import streamlit as st
 import pandas as pd
 
-# Configuración general de la página
+# Configuración general de la página (Icono cambiado a balón de básquetbol)
 st.set_page_config(
     page_title="Panel de Análisis Deportivo",
-    page_icon="⚽",
+    page_icon="🏀",
     layout="wide"
 )
 
@@ -37,18 +37,27 @@ if menu == "Equipos":
     try:
         df_equipos = cargar_datos(URL_EQUIPOS)
         
-        # Tarjeta resumen
         col1, col2 = st.columns(2)
         with col1:
             st.metric("Total de Filas (Equipos)", len(df_equipos))
         
-        # Aplicar filtro de búsqueda si el usuario escribe algo
         if busqueda:
             mascara = df_equipos.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
             df_equipos = df_equipos[mascara]
 
-        # Muestra la tabla tal cual está en el Google Sheet, sin números de índice a la izquierda
-        st.dataframe(df_equipos, use_container_width=True, hide_index=True)
+        # Configuración para transformar enlaces de texto en imágenes reales.
+        # IMPORTANTE: Reemplaza "Imagen" (o el nombre que esté entre comillas) por 
+        # el nombre exacto de la columna en tu Google Sheet que contiene los enlaces de las imágenes.
+        configuracion_columnas = {
+            "Imagen": st.column_config.ImageColumn("Logo / Imagen", width="small")
+        }
+
+        st.dataframe(
+            df_equipos, 
+            use_container_width=True, 
+            hide_index=True,
+            column_config=configuracion_columnas
+        )
 
     except Exception as e:
         st.error(f"Error al cargar la pestaña Equipos: {e}")
@@ -70,6 +79,9 @@ elif menu == "Jugadores":
         if busqueda:
             mascara = df_jugadores.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
             df_jugadores = df_jugadores[mascara]
+
+        # Si en Jugadores también tienes columna de imagen, descomenta y ajusta el nombre:
+        # config_jugadores = {"Imagen": st.column_config.ImageColumn("Foto", width="small")}
 
         st.dataframe(df_jugadores, use_container_width=True, hide_index=True)
 
