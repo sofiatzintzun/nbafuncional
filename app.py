@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# 2. Inyección de CSS responsivo avanzado para evitar desbordamiento de texto en móviles
+# 2. Inyección de CSS responsivo con forzado estricto de ancho y salto de línea en móviles
 BG_IMAGE_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZAtzM_7vjNgkwvj0lA-Y94T4lwnyb5yE0Lr9u1p-IdayCQczuvhXOns4&s=10"
 
 st.markdown(
@@ -28,23 +28,19 @@ st.markdown(
         z-index: -1;
     }}
     
-    /* Control absoluto de desbordamiento y ajuste de texto en móviles */
+    /* Reglas estrictas para dispositivos móviles */
     @media (max-width: 768px) {{
         .stContainer {{
-            padding: 10px !important;
+            max-width: 100% !important;
+            padding: 8px !important;
+            overflow-x: hidden !important;
+        }}
+        [data-testid="stVerticalBlock"] {{
             max-width: 100% !important;
             overflow-x: hidden !important;
         }}
-        h1 {{
-            font-size: 1.4rem !important;
-        }}
-        h2 {{
-            font-size: 1.1rem !important;
-        }}
-        h3 {{
-            font-size: 0.95rem !important;
-        }}
-        p, span, div, label, .stMarkdown {{
+        p, span, div, label, .stMarkdown, h1, h2, h3 {{
+            max-width: 100% !important;
             word-wrap: break-word !important;
             overflow-wrap: break-word !important;
             word-break: break-word !important;
