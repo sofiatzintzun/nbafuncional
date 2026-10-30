@@ -23,7 +23,7 @@ def cargar_datos(url):
     df = pd.read_csv(url)
     return df
 
-# Buscador general opcional en la barra lateral
+# Buscador general en la barra lateral
 st.sidebar.markdown("---")
 busqueda = st.sidebar.text_input("🔍 Buscar en la vista actual:", "")
 
@@ -37,17 +37,18 @@ if menu == "Equipos":
     try:
         df_equipos = cargar_datos(URL_EQUIPOS)
         
-        # Tarjetas resumen
+        # Tarjeta resumen
         col1, col2 = st.columns(2)
         with col1:
-            st.metric("Total de Equipos", len(df_equipos))
+            st.metric("Total de Filas (Equipos)", len(df_equipos))
         
         # Aplicar filtro de búsqueda si el usuario escribe algo
         if busqueda:
             mascara = df_equipos.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
             df_equipos = df_equipos[mascara]
 
-        st.dataframe(df_equipos, use_container_width=True)
+        # Muestra la tabla tal cual está en el Google Sheet, sin números de índice a la izquierda
+        st.dataframe(df_equipos, use_container_width=True, hide_index=True)
 
     except Exception as e:
         st.error(f"Error al cargar la pestaña Equipos: {e}")
@@ -64,13 +65,13 @@ elif menu == "Jugadores":
         
         col1, col2 = st.columns(2)
         with col1:
-            st.metric("Total de Jugadores Registrados", len(df_jugadores))
+            st.metric("Total de Filas (Jugadores)", len(df_jugadores))
 
         if busqueda:
             mascara = df_jugadores.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
             df_jugadores = df_jugadores[mascara]
 
-        st.dataframe(df_jugadores, use_container_width=True)
+        st.dataframe(df_jugadores, use_container_width=True, hide_index=True)
 
     except Exception as e:
         st.error(f"Error al cargar la pestaña Jugadores: {e}")
@@ -87,13 +88,13 @@ elif menu == "Partidos":
         
         col1, col2 = st.columns(2)
         with col1:
-            st.metric("Total de Partidos Registrados", len(df_partidos))
+            st.metric("Total de Filas (Partidos)", len(df_partidos))
 
         if busqueda:
             mascara = df_partidos.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
             df_partidos = df_partidos[mascara]
 
-        st.dataframe(df_partidos, use_container_width=True)
+        st.dataframe(df_partidos, use_container_width=True, hide_index=True)
 
     except Exception as e:
         st.error(f"Error al cargar la pestaña Partidos: {e}")
