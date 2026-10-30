@@ -129,7 +129,7 @@ if menu == "Equipos":
         st.error(f"Error al cargar la pestaña Equipos: {e}")
 
 # ---------------------------------------------------------
-# VISTA 2: JUGADORES (Diseño basado en tu boceto)
+# VISTA 2: JUGADORES (Diseño en Tarjetas con Imagen Ampliada)
 # ---------------------------------------------------------
 elif menu == "Jugadores":
     st.title("🏃 Vista de Jugadores")
@@ -155,16 +155,17 @@ elif menu == "Jugadores":
         st.metric("Jugadores Mostrados", len(df_jugadores))
         st.markdown("---")
 
-        # Iterar sobre cada fila para crear las tarjetas según el boceto de Jugadores:
+        # Iterar sobre cada fila para crear las tarjetas con la imagen más grande:
         for index, row in df_jugadores.iterrows():
             with st.container(border=True):
-                col_img, col_enf = st.columns([1, 4])
+                # Columnas ajustadas para dar más espacio a la imagen (ancho 1.2 vs 3.8)
+                col_img, col_enf = st.columns([1.2, 3.8])
                 
                 with col_img:
                     try:
                         imagen_url = row.iloc[9] if len(row) > 9 else "" # Columna J (índice 9)
                         if pd.notna(imagen_url) and str(imagen_url).startswith("http"):
-                            st.image(imagen_url, width=100)
+                            st.image(imagen_url, width=150) # Imagen ampliada a 150px
                         else:
                             st.write("🏀")
                     except:
