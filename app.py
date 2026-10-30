@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# 2. Inyección de CSS responsivo avanzado (corrección de textos largos en móviles)
+# 2. Inyección de CSS responsivo avanzado para evitar desbordamiento de texto en móviles
 BG_IMAGE_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZAtzM_7vjNgkwvj0lA-Y94T4lwnyb5yE0Lr9u1p-IdayCQczuvhXOns4&s=10"
 
 st.markdown(
@@ -28,10 +28,12 @@ st.markdown(
         z-index: -1;
     }}
     
-    /* Adaptabilidad total y ajuste de texto para dispositivos móviles */
+    /* Control absoluto de desbordamiento y ajuste de texto en móviles */
     @media (max-width: 768px) {{
         .stContainer {{
-            padding: 8px;
+            padding: 10px !important;
+            max-width: 100% !important;
+            overflow-x: hidden !important;
         }}
         h1 {{
             font-size: 1.4rem !important;
@@ -46,6 +48,7 @@ st.markdown(
             word-wrap: break-word !important;
             overflow-wrap: break-word !important;
             word-break: break-word !important;
+            white-space: normal !important;
         }}
     }}
     </style>
@@ -150,7 +153,6 @@ if menu == "Partidos":
 
                 st.markdown("---")
 
-                # Columnas J y K adaptadas con Markdown para evitar que se corten en móviles
                 col_jk1, col_jk2 = st.columns(2)
                 with col_jk1:
                     try:
