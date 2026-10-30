@@ -8,16 +8,24 @@ st.set_page_config(
     layout="wide"
 )
 
-# 2. Inyección de CSS para poner la imagen de fondo en la app
-BG_IMAGE_URL = "https://st.depositphotos.com/1614195/1512/i/450/depositphotos_15126123-stock-photo-basketball-background.jpg"
+# 2. Inyección de CSS con opacidad controlada para la imagen de fondo
+BG_IMAGE_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZAtzM_7vjNgkwvj0lA-Y94T4lwnyb5yE0Lr9u1p-IdayCQczuvhXOns4&s=10"
 
 st.markdown(
     f"""
     <style>
-    .stApp {{
+    .stApp::before {{
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         background-image: url("{BG_IMAGE_URL}");
         background-attachment: fixed;
         background-size: cover;
+        opacity: 0.3;  /* Cambia este valor entre 0.1 (muy transparente) y 1.0 (opaco) */
+        z-index: -1;
     }}
     </style>
     """,
