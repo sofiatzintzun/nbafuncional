@@ -116,12 +116,21 @@ elif menu == "Jugadores":
     try:
         df_jugadores = cargar_datos(URL_JUGADORES)
         
-        # Limpiar y reemplazar valores nulos o 'nan' para que se muestren correctamente
+        # Limpiar valores nulos por defecto
         df_jugadores = df_jugadores.fillna("")
+        
+        # Filtrar para mostrar solo los que tienen algo escrito en la Columna A (índice 0)
+        if len(df_jugadores.columns) > 0:
+            col_a = df_jugadores.columns[0]
+            df_jugadores = df_jugadores[
+                (df_jugadores[col_a].astype(str).str.strip() != "") & 
+                (df_jugadores[col_a].astype(str).str.lower() != "nan") &
+                (df_jugadores[col_a].astype(str).str.lower() != "none")
+            ]
         
         col1, col2 = st.columns(2)
         with col1:
-            st.metric("Total de Filas (Jugadores)", len(df_jugadores))
+            st.metric("Total de Jugadores Registrados", len(df_jugadores))
 
         if busqueda:
             mascara = df_jugadores.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
