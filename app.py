@@ -212,7 +212,7 @@ elif menu == "Jugadores":
         st.error(f"Error al cargar la pestaña Jugadores: {e}")
 
 # ---------------------------------------------------------
-# VISTA 3: PARTIDOS (Filtrando por número en Columna A, ocultándola y mostrando imágenes)
+# VISTA 3: PARTIDOS (Diseño personalizado según tu boceto)
 # ---------------------------------------------------------
 elif menu == "Partidos":
     st.title("📅 Vista de Partidos y Predicciones")
@@ -222,34 +222,113 @@ elif menu == "Partidos":
         df_partidos = cargar_datos(URL_PARTIDOS)
         df_partidos = df_partidos.fillna("")
         
+        # Filtrar solo los registros que tengan un número válido en la Columna A (índice 0)
         if len(df_partidos.columns) > 0:
             col_a_name = df_partidos.columns[0]
-            # Filtrar filas donde la Columna A tenga un número válido
             df_partidos_filtrado = df_partidos[pd.to_numeric(df_partidos[col_a_name], errors='coerce').notna()].copy()
-            
-            # Ocultar la Columna A para que no se muestre en el dataframe final
-            df_partidos = df_partidos_filtrado.iloc[:, 1:]
+            df_partidos = df_partidos_filtrado
         
-        col1, col2 = st.columns(2)
-        with col1:
-            st.metric("Total de Partidos", len(df_partidos))
-
         if busqueda:
             mascara = df_partidos.astype(str).apply(lambda row: row.str.contains(busqueda, case=False).any(), axis=1)
             df_partidos = df_partidos[mascara]
 
-        # Configuración para mostrar imágenes en lugar de enlaces en la tabla de Partidos
-        # (Asegúrate de que la columna de imagen en tu hoja se llame "Imagen" o cambia el nombre aquí)
-        config_partidos = {
-            "Imagen": st.column_config.ImageColumn("Imagen / Logo", width="small")
-        }
+        st.metric("Partidos Mostrados", len(df_partidos))
+        st.markdown("---")
 
-        st.dataframe(
-            df_partidos, 
-            use_container_width=True, 
-            hide_index=True,
-            column_config=config_partidos
-        )
+        for index, row in df_partidos.iterrows():
+            with st.container(border=True):
+                # Sección superior: Imagen (M) y Datos principales (D, E, F, H, I)
+                col_img, col_info = st.columns([1.2, 3.8])
+                
+                with col_img:
+                    try:
+                        imagen_url = row.iloc[12] if len(row) > 12 else "" # Columna M (índice 12)
+                        if pd.notna(imagen_url) and str(imagen_url).startswith("http"):
+                            st.image(imagen_url, width=150)
+                        else:
+                            st.write("🏀")
+                    except:
+                        st.write("🏀")
+
+                with col_info:
+                    try:
+                        partido_val = row.iloc[3] if len(row) > 3 else "" # Columna D
+                        st.subheader(f"⚔️ {partido_val}")
+                    except:
+                        st.subheader("Encuentro")
+
+                    # Fila 1: Hora (E) y Puntos Proyectados (F)
+                    sub_col1, sub_col2 = st.columns(2)
+                    with sub_col1:
+                        try:
+                            hora_val = row.iloc[4] if len(row) > 4 else "" # Columna E
+                            col_e_name = df_partidos.columns[4] if len(df_partidos.columns) > 4 else "Hora"
+                            st.markdown(f"**⏰ {col_e_name}:** {hora_val}")
+                        except:
+                            pass
+                    with sub_col2:
+                        try:
+                            puntos_val = row.iloc[5] if len(row) > 5 else "" # Columna F
+                            col_f_name = df_partidos.columns[5] if len(df_partidos.columns) > 5 else "Puntos Proyectados"
+                            st.markdown(f"**📊 {col_f_name}:** {puntos_val}")
+                        except:
+                            pass
+
+                    # Fila 2: Favorito (H) y Proyeccion (I)
+                    sub_col3, sub_col4 = st.columns(2)
+                    with sub_col3:
+                        try:
+                            favorito_val = row.iloc[7] if len(row) > 7 else "" # Columna H
+                            col_h_name = df_partidos.columns[7] if len(df_partidos.columns) > 7 else "Favorito"
+                            st.markdown(f"**⭐ {col_h_name}:** {favorito_val}")
+                        except:
+                            pass
+                    with sub_col4:
+                        try:
+                            proy_val = row.iloc[8] if len(row) > 8 else "" # Columna I
+                            col_i_name = df_partidos.columns[8] if len(df_partidos.columns) > 8 else "Proyección"
+                            st.markdown(f"**📈 {col_i_name}:** {proy_val}")
+                        except:
+                            pass
+
+                st.markdown("---")
+
+                # Sección media: (J) y (K)
+                col_jk1, col_jk2 = st.columns(2)
+                with col_jk1:
+                    try:
+                        j_val = row.iloc[9] if len(row) > 9 else "" # Columna J
+                        col_j_name = df_partidos.columns[9] if len(df_partidos.columns) > 9 else "J"
+                        st.metric(label=str(col_j_name), value=str(j_val))
+                    except:
+                        pass
+                with col_jk2:
+                    try:
+                        k_val = row.iloc[10] if len(row) > 10 else "" # Columna K
+                        col_k_name = df_partidos.columns[10] if len(df_partidos.columns) > 10 else "K"
+                        st.metric(label=str(col_k_name), value=str(k_val))
+                    except:
+                        pass
+
+                st.markdown("---")
+
+                # Sección inferior: Descripción (N) y Proyección de Jugadores (L)
+                desc_col, proy_jug_col = st.columns(2)
+                with desc_col:
+                    try:
+                        desc_val = row.iloc[13] if len(row) > 13 else "" # Columna N
+                        col_n_name = df_partidos.columns[13] if len(df_partidos.columns) > 13 else "Descripción"
+                        st.markdown(f"**{col_n_name}:** {desc_val}")
+                    except:
+                        pass
+
+                with proy_jug_col:
+                    try:
+                        proy_jug_val = row.iloc[11] if len(row) > 11 else "" # Columna L
+                        col_l_name = df_partidos.columns[11] if len(df_partidos.columns) > 11 else "Proyección de Jugadores"
+                        st.markdown(f"**{col_l_name}:** {proy_jug_val}")
+                    except:
+                        pass
 
     except Exception as e:
         st.error(f"Error al cargar la pestaña Partidos: {e}")
